@@ -1,0 +1,40 @@
+{
+  "meta": {
+    "title": "Valentina Torres — Portfolio",
+    "description": "Valentina Torres, web designer. UX/UI and high-performance websites."
+  },
+  "name": "Valentina Torres",
+  "nav": {
+    "work": "Work",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "hero": {
+    "titleLines": ["Valentina", "Torres"],
+    "subtitle": "Web designer — UX/UI & high-performance websites"
+  },
+  "work": {
+    "label": "Work",
+    "hint": "Scroll, drag or click an image",
+    "labels": {
+      "role": "Role",
+      "date": "Launch",
+      "category": "Category",
+      "about": "About",
+      "visitSite": "Visit site ↗"
+    }
+  },
+  "about": {
+    "heading": "About",
+    "text": "Placeholder — Valentina Torres is a designer focused on UX/UI and high-performance websites, working with agencies, studios and brands. Replace this text with the real bio."
+  },
+  "contact": {
+    "heading": "Contact",
+    "email": "hello@example.com",
+    "socials": [
+      { "label": "Instagram", "url": "#" },
+      { "label": "LinkedIn", "url": "#" },
+      { "label": "Behance", "url": "#" }
+    ]
+  }
+}

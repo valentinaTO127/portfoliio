@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+    <meta name="description" content="" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body class="is-loading">
+    <!-- Preloader -->
+    <div class="preloader" aria-hidden="true">
+      <span class="preloader__count">0</span><span class="preloader__percent">%</span>
+    </div>
+
+    <!-- Fixed top bar -->
+    <header class="header">
+      <a href="#hero" class="header__name" data-scroll-to data-text="name"></a>
+      <nav class="header__nav" aria-label="Main">
+        <a href="#work" data-scroll-to data-text="nav.work"></a>
+        <a href="#about" data-scroll-to data-text="nav.about"></a>
+        <a href="#contact" data-scroll-to data-text="nav.contact"></a>
+      </nav>
+      <a class="header__email" data-email></a>
+      <button class="header__burger" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-panel">
+        <span></span><span></span>
+      </button>
+    </header>
+
+    <!-- Mobile fullscreen contact panel -->
+    <div class="mobile-panel" id="mobile-panel" aria-hidden="true">
+      <nav class="mobile-panel__nav" aria-label="Mobile">
+        <a href="#work" data-scroll-to data-text="nav.work"></a>
+        <a href="#about" data-scroll-to data-text="nav.about"></a>
+        <a href="#contact" data-scroll-to data-text="nav.contact"></a>
+      </nav>
+      <div class="mobile-panel__contact">
+        <a data-email></a>
+        <ul class="socials" data-socials></ul>
+      </div>
+    </div>
+
+    <main>
+      <section class="hero" id="hero">
+        <canvas class="hero__canvas" aria-hidden="true"></canvas>
+        <!-- Guide lines: each span is centered in its grid cell (25% / 75%) -->
+        <div class="hero__lines" aria-hidden="true">
+          <div class="hero__lines-vertical"><span></span><span></span></div>
+          <div class="hero__lines-horizontal"><span></span><span></span></div>
+        </div>
+        <h1 class="hero__title"></h1>
+        <p class="hero__subtitle" data-text="hero.subtitle"></p>
+      </section>
+
+      <section class="work" id="work">
+        <div class="work__sticky">
+          <h2 class="work__label" data-text="work.label"></h2>
+          <canvas class="work__canvas" aria-hidden="true"></canvas>
+          <div class="work__fallback" hidden></div>
+          <article class="project-info" aria-live="polite">
+            <p class="project-info__index"></p>
+            <h3 class="project-info__title"></h3>
+            <dl class="project-info__meta">
+              <div><dt data-text="work.labels.role"></dt><dd data-field="role"></dd></div>
+              <div><dt data-text="work.labels.date"></dt><dd data-field="date"></dd></div>
+              <div><dt data-text="work.labels.category"></dt><dd data-field="category"></dd></div>
+            </dl>
+            <p class="project-info__about"><span data-text="work.labels.about"></span> <span data-field="about"></span></p>
+            <a class="project-info__link" data-field="url" target="_blank" rel="noopener" data-text="work.labels.visitSite"></a>
+          </article>
+          <p class="work__hint" data-text="work.hint"></p>
+        </div>
+      </section>
+
+      <section class="about" id="about">
+        <h2 data-text="about.heading"></h2>
+        <p data-text="about.text"></p>
+      </section>
+    </main>
+
+    <footer class="contact" id="contact">
+      <h2 data-text="contact.heading"></h2>
+      <a class="contact__email" data-email></a>
+      <ul class="socials" data-socials></ul>
+    </footer>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
