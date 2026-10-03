@@ -1,5 +1,6 @@
 import Lenis from 'lenis';
 import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 // Single Lenis instance shared by every module.
 // Stays null when the user prefers reduced motion -> native scroll is used.
@@ -8,6 +9,8 @@ let lenis = null;
 export function initScroll({ reducedMotion }) {
   if (reducedMotion) return;
   lenis = new Lenis({ lerp: 0.1 });
+  // Keep ScrollTrigger in sync with Lenis' smoothed scroll
+  lenis.on('scroll', ScrollTrigger.update);
   // Drive Lenis with GSAP's ticker so both share the same frame loop
   gsap.ticker.add((time) => lenis.raf(time * 1000));
   gsap.ticker.lagSmoothing(0);

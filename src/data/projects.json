@@ -16,39 +16,29 @@
       "role": "Programmer, UX/UI Design",
       "date": "2026",
       "category": "WebGL",
-      "about": "Placeholder description for project 02.",
+      "about": "Prototipo de sitio web para XTRM Systems.",
       "url": "#",
       "image": "images/02.svg"
     },
     {
       "id": 3,
-      "title": "Project 03",
-      "role": "Art Direction",
+      "title": "Video Loop",
+      "role": "Animator",
       "date": "2025",
-      "category": "Website",
-      "about": "Placeholder description for project 03.",
-      "url": "#",
+      "category": "Loop video animation",
+      "about": "Video loop en Blender",
+      "url": null,
       "image": "images/03.svg"
     },
     {
       "id": 4,
-      "title": "Project 04",
-      "role": "UX/UI Design",
+      "title": "Lettering Loop",
+      "role": "Animator",
       "date": "2025",
-      "category": "WebGL",
-      "about": "Placeholder description for project 04.",
-      "url": "#",
-      "image": "images/04.svg"
-    },
-    {
-      "id": 5,
-      "title": "Project 05",
-      "role": "Web Design",
-      "date": "2024",
-      "category": "Website",
-      "about": "Placeholder description for project 05.",
-      "url": "#",
-      "image": "images/05.svg"
+      "category": "Lettering Loop animation",
+      "about": "Lettering con fur, loop en Blender",
+      "url": null,
+      "image": "images/03.svg"
     }
   ]
 }

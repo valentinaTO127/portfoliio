@@ -1,12 +1,14 @@
 import './styles/main.css';
 import { gsap } from 'gsap';
 import { initNav } from './modules/nav.js';
-import { initScroll } from './modules/scroll.js';
+import { initScroll, scrollTo } from './modules/scroll.js';
 import { runPreloader } from './modules/preloader.js';
 import { initHero } from './modules/hero.js';
 import { createCarousel, createFallback } from './modules/carousel.js';
 import { createProjectInfo } from './modules/projectInfo.js';
 import { fillContent } from './modules/content.js';
+import { initAboutReveal } from './modules/aboutReveal.js';
+import { initContactReveal } from './modules/contactReveal.js';
 
 // The preloader runs on every direct load, so always start at the top
 history.scrollRestoration = 'manual';
@@ -30,10 +32,11 @@ async function init() {
   const info = createProjectInfo(document.querySelector('.project-info'));
   const onChange = (index) => info.show(index);
   const tasks = [document.fonts.ready];
+  let carousel = null;
 
   if (hasWebGL()) {
     initHero(document.querySelector('.hero__canvas'), { reducedMotion });
-    const carousel = createCarousel(document.querySelector('.work__canvas'), { onChange, reducedMotion });
+    carousel = createCarousel(document.querySelector('.work__canvas'), { onChange, reducedMotion });
     tasks.push(...carousel.loadTextures());
   } else {
     createFallback(document.querySelector('.work__fallback'), { onChange });
@@ -41,6 +44,15 @@ async function init() {
 
   await runPreloader(tasks, { reducedMotion });
   initScroll({ reducedMotion });
+  initAboutReveal({ reducedMotion });
+  initContactReveal({ reducedMotion });
+
+  // Coming back from project.html (./?project=2#work): land on that same project in the carousel
+  if (location.hash === '#work') {
+    const projectIndex = Number(new URLSearchParams(location.search).get('project')) || 0;
+    if (carousel) carousel.jumpTo(projectIndex);
+    else scrollTo('#work', { immediate: true });
+  }
 
   // Lines grow from their center, then the CSS transition fades their color
   const lines = document.querySelector('.hero__lines');

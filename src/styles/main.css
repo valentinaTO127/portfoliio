@@ -1,9 +1,11 @@
 /* ---------- Tokens ---------- */
 :root {
-  --bg: #f4f0ed;
+  --bg: #f4e7e2;
   --text: #141414;
   --muted: #7a7672;
   --line: rgba(20, 20, 20, 0.15);
+  --accent: #31e046;
+  --display: #2f094f; /* large display titles */
   --font: 'Inter Tight', system-ui, sans-serif;
   --gutter: clamp(16px, 3vw, 40px);
   --header-h: 64px;
@@ -45,6 +47,16 @@ ul {
   list-style: none;
 }
 
+::selection {
+  background: var(--accent);
+  color: var(--text);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
 /* Any `display` rule beats the [hidden] attribute, so enforce it explicitly */
 [hidden] {
   display: none !important;
@@ -72,6 +84,7 @@ html.lenis body {
   justify-content: flex-end;
   padding: var(--gutter);
   background: var(--bg);
+  color: var(--display);
   font-weight: 800;
   font-size: clamp(64px, 18vw, 240px);
   line-height: 0.8;
@@ -79,7 +92,6 @@ html.lenis body {
 }
 .preloader__percent {
   font-size: 0.3em;
-  color: var(--muted);
 }
 
 /* ---------- Header (mobile first) ---------- */
@@ -99,6 +111,9 @@ html.lenis body {
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.02em;
+  /* White + difference: the text inverts whatever passes behind it, so it always contrasts */
+  color: #fff;
+  mix-blend-mode: difference;
 }
 .header__nav,
 .header__email {
@@ -138,6 +153,7 @@ html.lenis body {
   height: 32px;
   border: 0;
   background: none;
+  color: inherit;
   cursor: pointer;
 }
 .header__burger span {
@@ -145,7 +161,7 @@ html.lenis body {
   left: 4px;
   right: 4px;
   height: 2px;
-  background: var(--text);
+  background: currentColor;
   transition: transform 0.4s var(--ease);
 }
 .header__burger span:first-child {
@@ -184,6 +200,9 @@ html.lenis body {
   line-height: 1;
   text-transform: uppercase;
 }
+.mobile-panel__nav a:hover {
+  color: var(--accent);
+}
 .mobile-panel__contact {
   display: flex;
   flex-direction: column;
@@ -198,7 +217,7 @@ html.lenis body {
   color: var(--muted);
 }
 .socials a:hover {
-  color: var(--text);
+  color: var(--accent);
 }
 
 /* ---------- Hero ---------- */
@@ -246,9 +265,9 @@ html.lenis body {
   width: 100%;
   height: 1px;
 }
-/* Drawn dark first, then they settle into the softer guide color */
+/* Drawn dark first, then they settle into the accent color */
 .hero__lines.is-drawn span {
-  background-color: var(--line);
+  background-color: var(--accent);
 }
 .hero__title {
   position: relative;
@@ -257,7 +276,8 @@ html.lenis body {
   line-height: 0.82;
   letter-spacing: -0.05em;
   text-transform: uppercase;
-  mix-blend-mode: multiply;
+  color: #D0F2AE;
+  mix-blend-mode: difference;
 }
 .hero__subtitle {
   position: relative;
@@ -322,10 +342,11 @@ html.lenis body {
 }
 .project-info__index {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--display);
 }
 .project-info__title {
   font-size: clamp(32px, 6vw, 72px);
+  color: var(--display);
   font-weight: 800;
   letter-spacing: -0.04em;
   line-height: 0.9;
@@ -356,6 +377,7 @@ html.lenis body {
   font-weight: 700;
   text-transform: uppercase;
   font-size: 13px;
+  color: var(--accent);
   border-bottom: 1px solid currentColor;
 }
 
@@ -364,15 +386,23 @@ html.lenis body {
   position: absolute;
   inset: calc(var(--header-h) + 40px) var(--gutter) 45% var(--gutter);
   display: flex;
-  gap: 16px;
+  gap: clamp(32px, 5vw, 64px);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
 }
-.work__fallback img {
+/* Same look as the WebGL planes: subtle rounded corners */
+.work__fallback a {
+  flex: none;
   height: 100%;
-  aspect-ratio: 3 / 2;
-  object-fit: cover;
   scroll-snap-align: center;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.work__fallback img {
+  display: block;
+  height: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
 }
 
 /* ---------- About ---------- */
@@ -398,6 +428,57 @@ html.lenis body {
   letter-spacing: -0.02em;
 }
 
+/* Skills marquee (full bleed: cancels the section's side padding) */
+.skills {
+  display: grid;
+  gap: 16px;
+  margin-top: clamp(72px, 10vw, 144px);
+}
+.skills__heading {
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.marquee {
+  margin-inline: calc(var(--gutter) * -1);
+  overflow: hidden;
+  border-block: 1px solid var(--line);
+}
+.marquee__track {
+  display: flex;
+  width: max-content;
+  animation: marquee 25s linear infinite;
+}
+.marquee:hover .marquee__track {
+  animation-play-state: paused;
+}
+.marquee__group {
+  display: flex;
+}
+.marquee__item {
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 0;
+  white-space: nowrap;
+  font-size: clamp(20px, 3vw, 36px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+/* Accent dot between skills (also after the last one, so the loop keeps the rhythm) */
+.marquee__item::after {
+  content: '•';
+  margin-inline: 0.6em;
+  color: var(--accent);
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
 /* ---------- Contact ---------- */
 .contact {
   display: grid;
@@ -405,12 +486,93 @@ html.lenis body {
   padding: 120px var(--gutter) var(--gutter);
   border-top: 1px solid var(--line);
 }
-.contact__email {
-  font-size: clamp(32px, 8vw, 120px);
+/* Mobile: phrase on top, contact list below. Desktop: two columns (see media query) */
+.contact__grid {
+  display: grid;
+  gap: 64px;
+}
+.contact__phrase {
+  max-width: 12ch;
+  font-size: clamp(40px, 7vw, 104px);
+  color: var(--display);
   font-weight: 800;
   letter-spacing: -0.04em;
-  line-height: 1;
-  word-break: break-all;
+  line-height: 0.95;
+}
+/* Mobile / touch: the image as a regular element above the phrase, at its original aspect ratio (no crop);
+   the reveal image is hidden */
+.contact {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.contact__intro {
+  display: grid;
+  gap: 24px;
+  align-content: start;
+}
+.contact__mobile-image {
+  display: block;
+  padding-left: 20%;
+  width: 80%;
+  height: auto;
+}
+.contact__reveal-image {
+  display: none;
+}
+/* Desktop with a real cursor: no square image; the reveal image covers the section,
+   visible only inside a circle at (--x, --y) with radius --r */
+@media (min-width: 768px) and (hover: hover) and (pointer: fine) {
+  .contact__mobile-image {
+    display: none;
+  }
+  .contact__reveal-image {
+    display: block;
+    position: absolute;
+    inset: 0;
+    /* Ends right before the email/socials column (--clip-right set from JS), so it's never drawn over it
+       and "center" means centered in the free area on the left */
+    width: calc(100% - var(--clip-right, 0px));
+    height: 100%;
+    /* Whole image visible (no crop), centered */
+    object-fit: contain;
+    object-position: center;
+    pointer-events: none;
+    z-index: 1;
+    --r: 0px;
+    -webkit-mask-image: radial-gradient(circle at var(--x, 50%) var(--y, 50%), #000 var(--r), transparent var(--r));
+    mask-image: radial-gradient(circle at var(--x, 50%) var(--y, 50%), #000 var(--r), transparent var(--r));
+    /* Masks tile by default: one single circle, never repeated */
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+}
+.contact__list {
+  display: grid;
+  gap: 40px;
+  align-content: start;
+}
+.contact__item {
+  display: grid;
+  gap: 8px;
+}
+.contact__item dt {
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.contact__link,
+.contact__socials a {
+  font-size: clamp(24px, 3vw, 40px);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  transition: color 0.4s var(--ease);
+}
+.contact__link:hover,
+.contact__socials a:hover {
+  color: var(--accent);
 }
 
 /* ---------- Desktop ---------- */
@@ -427,6 +589,16 @@ html.lenis body {
     right: auto;
     max-width: 520px;
   }
+  /* Phrase 60% on the left, contact list 38% on the right; the leftover 2% is the gap */
+  .contact__grid {
+    grid-template-columns: 60% 38%;
+    justify-content: space-between;
+    gap: 0;
+    align-items: start;
+  }
+  .contact__phrase {
+    max-width: none;
+  }
 }
 
 /* ---------- Reduced motion ---------- */
@@ -436,5 +608,17 @@ html.lenis body {
   *::after {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
+  }
+  /* Static skills list instead of a marquee */
+  .marquee__track {
+    width: auto;
+    animation: none;
+  }
+  .marquee__group {
+    flex-wrap: wrap;
+    padding-inline: var(--gutter);
+  }
+  .marquee__group[aria-hidden] {
+    display: none;
   }
 }

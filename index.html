@@ -78,13 +78,37 @@
       <section class="about" id="about">
         <h2 data-text="about.heading"></h2>
         <p data-text="about.text"></p>
+        <div class="skills">
+          <h3 class="skills__heading" data-text="about.skillsHeading"></h3>
+          <!-- Marquee: the list is rendered twice and the track slides -50% to loop seamlessly -->
+          <div class="marquee">
+            <div class="marquee__track" data-skills></div>
+          </div>
+        </div>
       </section>
     </main>
 
-    <footer class="contact" id="contact">
+    <!-- Desktop: the background image is revealed inside a circle that follows the cursor. Mobile: a square image above the phrase -->
+    <footer class="contact" id="contact" data-reveal>
+      <img class="contact__reveal-image" alt="" aria-hidden="true" />
       <h2 data-text="contact.heading"></h2>
-      <a class="contact__email" data-email></a>
-      <ul class="socials" data-socials></ul>
+      <div class="contact__grid">
+        <div class="contact__intro">
+          <img class="contact__mobile-image" alt="" loading="lazy" />
+          <p class="contact__phrase" data-text="contact.phrase"></p>
+        </div>
+        <!-- Label / value pairs: Email on top, socials below -->
+        <dl class="contact__list">
+          <div class="contact__item">
+            <dt data-text="contact.labels.email"></dt>
+            <dd><a class="contact__link" data-email></a></dd>
+          </div>
+          <div class="contact__item">
+            <dt data-text="contact.labels.social"></dt>
+            <dd><ul class="contact__socials" data-socials></ul></dd>
+          </div>
+        </dl>
+      </div>
     </footer>
 
     <script type="module" src="/src/main.js"></script>

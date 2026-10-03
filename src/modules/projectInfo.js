@@ -23,7 +23,10 @@ export function createProjectInfo(root) {
     fields.date.textContent = project.date;
     fields.category.textContent = project.category;
     fields.about.textContent = project.about;
-    fields.url.href = project.url;
+    // Projects without a public site (url: null) hide the "Visit site" link
+    fields.url.hidden = !project.url;
+    if (project.url) fields.url.href = project.url;
+    else fields.url.removeAttribute('href');
   }
 
   return {

@@ -24,17 +24,28 @@
       "visitSite": "Visit site ↗"
     }
   },
+  "project": {
+    "back": "← Back to work",
+    "imageAlt": "image",
+    "rotate": "Rotate your phone"
+  },
   "about": {
     "heading": "About",
-    "text": "Placeholder — Valentina Torres is a designer focused on UX/UI and high-performance websites, working with agencies, studios and brands. Replace this text with the real bio."
+    "text": "Soy una diseñadora enfocada en el UX/UI y sitios web con high-performance con fuerte atención al detalle, creando productos de alta calidad con experiencias cautivantes capaz de convertir tus ideas en realidad",
+    "skillsHeading": "Skills",
+    "skills": ["JavaScript", "CSS", "HTML", "PHP", "MySQL", "Three.js", "Webflow", "Figma", "Blender"]
   },
   "contact": {
-    "heading": "Contact",
-    "email": "hello@example.com",
+    "heading": "Contacto",
+    "phrase": "Rediseñemos el mundo juntos",
+    "labels": {
+      "email": "Email",
+      "social": "Social"
+    },
+    "email": "valetina.torres2112@gmail.com",
     "socials": [
-      { "label": "Instagram", "url": "#" },
-      { "label": "LinkedIn", "url": "#" },
-      { "label": "Behance", "url": "#" }
+      { "label": "Instagram", "url": "https://www.instagram.com/vale_sk127y/" },
+      { "label": "Email", "url": "mailto:valetina.torres2112@gmail.com" }
     ]
   }
 }

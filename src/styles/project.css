@@ -1,0 +1,173 @@
+/* ---------- Project page (project.html) ---------- */
+/* Loaded after main.css, so it reuses its tokens, header and .project-info styles */
+
+.header__back {
+  margin-left: auto;
+}
+
+/* ---------- Hero ---------- */
+.project-hero {
+  position: relative;
+  height: 100svh;
+  overflow: hidden;
+}
+
+/* Start state = the active image of the Work carousel (carousel.js -> resize()):
+   height 42% of the viewport, ratio 3:4 (capped at 75% of the width), centered 10% above the middle */
+.project-hero__media {
+  position: absolute;
+  left: 50%;
+  top: 40%;
+  width: min(31.5svh, 75vw);
+  height: min(42svh, 100vw);
+  transform: translate(-50%, -50%);
+  overflow: hidden;
+  /* Rounded corners of the carousel planes (carousel.js: CORNER_RADIUS, 3% of the width),
+     so the hand-off from index.html is seamless; they go away while the image grows */
+  border-radius: calc(min(31.5svh, 75vw) * 0.03);
+  transition: border-radius 0.8s var(--ease);
+}
+.project-hero__media.is-expanded {
+  border-radius: 0;
+}
+
+/* End state = the cover's own aspect ratio, so it is never cropped.
+   --cover-ratio (width / height) is set in project.js once the cover loads; 16:9 until then.
+   Mobile (portrait 1m.png): up to 70% of the height, a bit above center so the fixed title stays clear.
+   Desktop: 80% of the width, capped at 80% of the height. */
+.project-hero__media.is-expanded {
+  top: 44%;
+  width: min(80vw, calc(70svh * var(--cover-ratio, 16 / 9)));
+  height: auto;
+  aspect-ratio: var(--cover-ratio, 16 / 9);
+}
+@media (min-width: 768px) {
+  .project-hero__media.is-expanded {
+    top: 50%;
+    width: min(80vw, calc(80svh * var(--cover-ratio, 16 / 9)));
+  }
+}
+
+/* Both images fill the box and get cropped like the carousel texture, so the crop opens up as it grows */
+.project-hero__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.project-hero__img[data-hero-cover] {
+  opacity: 0;
+}
+
+/* ---------- Video projects (cover = 1.mp4) on phones ---------- */
+/* Portrait: the video is turned 90° and fills the whole screen (cover crops the extra edges),
+   and the project name turns with it so it reads upright once the phone is held sideways.
+   Landscape (the phone really rotated): plain fullscreen, no CSS rotation, or it would turn twice. */
+@media (max-width: 767px) and (orientation: portrait) {
+  .project-hero__media.is-video.is-expanded {
+    top: 50%;
+    width: 100svh;
+    height: 100vw;
+    aspect-ratio: auto;
+    transform: translate(-50%, -50%) rotate(90deg);
+  }
+  /* Box sized as the landscape screen, rotated around its top-left corner and pushed back into view:
+     its bottom-left corner (where the name sits) ends at the screen's top-left */
+  .is-video-view .project-info {
+    top: 0;
+    left: 0;
+    right: auto;
+    bottom: auto;
+    width: 100svh;
+    height: 100vw;
+    padding: var(--gutter);
+    align-content: end;
+    transform-origin: 0 0;
+    transform: translateX(100vw) rotate(90deg);
+  }
+}
+@media (orientation: landscape) and (max-height: 500px) {
+  .project-hero__media.is-video.is-expanded {
+    top: 50%;
+    width: 100vw;
+    height: 100svh;
+    aspect-ratio: auto;
+  }
+}
+
+/* "Rotate your phone" screen */
+.rotate-hint {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 24px;
+  background: var(--bg);
+  visibility: hidden;
+  opacity: 0;
+}
+.rotate-hint__phone {
+  position: relative;
+  width: 44px;
+  height: 76px;
+  border: 3px solid var(--display);
+  border-radius: 8px;
+}
+/* Screen notch, so the turn reads as a phone and not a rectangle */
+.rotate-hint__phone::after {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  width: 12px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--accent);
+  transform: translateX(-50%);
+}
+.rotate-hint__text {
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- Project name: fixed, always visible ---------- */
+.project-page .project-info {
+  position: fixed;
+  z-index: 10;
+}
+/* Same filter as the menu: white + difference inverts whatever passes behind, so the name always contrasts.
+   It goes on the fixed container (it's its own stacking context, so a blend on the title alone would only
+   mix with the container's transparent backdrop). Turned on by project.js once the other info has faded,
+   because dark text with difference over the light background would turn almost invisible */
+.project-page.is-title-blend .project-info {
+  mix-blend-mode: difference;
+}
+.project-page.is-title-blend .project-info__title {
+  color: #fff;
+}
+
+/* ---------- Gallery ---------- */
+.project-gallery {
+  display: grid;
+  justify-items: center;
+  gap: clamp(48px, 8vw, 120px);
+  /* Same max width as the hero image; extra bottom space so the fixed title never covers the last image */
+  padding: 0 10vw 30svh;
+}
+.project-gallery:empty {
+  display: none;
+}
+/* Each file keeps its own aspect ratio; tall ones (phone screenshots) are capped by height instead of width */
+.project-gallery img,
+.project-gallery video {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 90svh;
+}

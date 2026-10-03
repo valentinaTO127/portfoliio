@@ -13,12 +13,12 @@ export function initHero(canvas, { reducedMotion }) {
   const pivot = new THREE.Group();
   const model = new THREE.Mesh(
     new THREE.TorusKnotGeometry(1.4, 0.45, 220, 32),
-    new THREE.MeshStandardMaterial({ color: 0xcfc4ba, roughness: 0.35, metalness: 0.1 })
+    new THREE.MeshStandardMaterial({ color: 0x7AFAB9, roughness: 0.35, metalness: 0.1 })
   );
   pivot.add(model);
   scene.add(pivot);
 
-  scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+  scene.add(new THREE.AmbientLight(0x5555ff, 1.2));
   const light = new THREE.DirectionalLight(0xffffff, 2.5);
   light.position.set(3, 4, 5);
   scene.add(light);

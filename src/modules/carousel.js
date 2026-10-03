@@ -1,10 +1,87 @@
 import * as THREE from 'three';
 import { projects } from '../data/projects.js';
 import { scrollTo } from './scroll.js';
+import { getCarouselImage } from './projectAssets.js';
 
 const lerp = (from, to, amount) => from + (to - from) * amount;
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 const CLICK_THRESHOLD = 5; // px of movement allowed before a pointerup stops counting as a click
+const PLANE_RATIO = 3 / 4; // width / height of every project image
+const PLANE_GAP = 0.4; // empty space between images, as a fraction of one image's width
+const CORNER_RADIUS = 0.03; // rounded corners, as a fraction of the image width
+
+// Relative URL so it also works under the /portfoliio/ base on GitHub Pages
+const projectUrl = (project) => `project.html?id=${project.id}`;
+
+// Crops the texture like CSS object-fit: cover, so any image fills the plane without stretching
+function coverTexture(texture) {
+  const { width, height } = texture.image;
+  const imageRatio = width / height;
+  if (imageRatio > PLANE_RATIO) {
+    texture.repeat.set(PLANE_RATIO / imageRatio, 1);
+  } else {
+    texture.repeat.set(1, imageRatio / PLANE_RATIO);
+  }
+  texture.offset.set((1 - texture.repeat.x) / 2, (1 - texture.repeat.y) / 2);
+}
+
+// Image plane with rounded corners.
+// A plane has no border-radius, so the corners are cut per pixel with a rounded-rectangle
+// signed distance field (SDF): d < 0 inside the shape, 0 on the edge, > 0 outside.
+function createImageMaterial() {
+  return new THREE.ShaderMaterial({
+    transparent: true,
+    uniforms: {
+      uMap: { value: null },
+      uUvRepeat: { value: new THREE.Vector2(1, 1) },
+      uUvOffset: { value: new THREE.Vector2(0, 0) },
+      uPlaceholder: { value: new THREE.Color(0xe6dfd9) },
+      uOpacity: { value: 1 },
+      uRatio: { value: PLANE_RATIO },
+    },
+    vertexShader: /* glsl */ `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: /* glsl */ `
+      uniform sampler2D uMap;
+      uniform vec2 uUvRepeat;
+      uniform vec2 uUvOffset;
+      uniform vec3 uPlaceholder;
+      uniform float uOpacity;
+      uniform float uRatio;
+      varying vec2 vUv;
+
+      // Rounded rectangle SDF centered at 0 (half size b, corner radius r)
+      float roundedBox(vec2 p, vec2 b, float r) {
+        vec2 q = abs(p) - b + r;
+        return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r;
+      }
+
+      void main() {
+        // Work in units of the image width so the radius looks the same on every corner
+        vec2 size = vec2(1.0, 1.0 / uRatio);
+        vec2 p = (vUv - 0.5) * size;
+        float d = roundedBox(p, size * 0.5, ${CORNER_RADIUS.toFixed(3)});
+
+        // Smooth (antialiased) cut at the rounded edge
+        float aa = fwidth(d);
+        float shape = 1.0 - smoothstep(-aa, aa, d);
+
+        vec3 color = uPlaceholder;
+        #ifdef HAS_MAP
+          color = texture2D(uMap, vUv * uUvRepeat + uUvOffset).rgb;
+        #endif
+
+        gl_FragColor = vec4(color, shape * uOpacity);
+        #include <colorspace_fragment>
+      }
+    `,
+  });
+}
 
 // Scroll-driven WebGL carousel.
 // Single source of truth = the page scroll inside the .work section:
@@ -23,7 +100,7 @@ export function createCarousel(canvas, { onChange, reducedMotion }) {
 
   const geometry = new THREE.PlaneGeometry(1, 1);
   const meshes = projects.map((project, index) => {
-    const material = new THREE.MeshBasicMaterial({ color: 0xe6dfd9, transparent: true });
+    const material = createImageMaterial();
     const mesh = new THREE.Mesh(geometry, material);
     mesh.userData.index = index;
     scene.add(mesh);
@@ -42,15 +119,15 @@ export function createCarousel(canvas, { onChange, reducedMotion }) {
     const viewH = 2 * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.position.z;
     const viewW = viewH * camera.aspect;
     let planeH = viewH * 0.42;
-    let planeW = planeH * 1.5;
+    let planeW = planeH * PLANE_RATIO;
     if (planeW > viewW * 0.75) {
       planeW = viewW * 0.75;
-      planeH = planeW / 1.5;
+      planeH = planeW / PLANE_RATIO;
     }
     Object.assign(layout, {
       planeW,
       planeH,
-      spacing: planeW * 1.15,
+      spacing: planeW * (1 + PLANE_GAP),
       offsetY: viewH * 0.1,
       viewW,
     });
@@ -115,8 +192,9 @@ export function createCarousel(canvas, { onChange, reducedMotion }) {
     if (!hit) return;
     const clicked = hit.object.userData.index;
     const active = Math.round(state.current);
-    // Clicking the active image advances to the next one (loops at the end)
-    goTo(clicked === active ? (active + 1) % count : clicked);
+    // Clicking the active image opens its project page; any other image just slides to the center
+    if (clicked === active) location.href = projectUrl(projects[clicked]);
+    else goTo(clicked);
   }
 
   // ---------- Keyboard ----------
@@ -138,7 +216,7 @@ export function createCarousel(canvas, { onChange, reducedMotion }) {
       const distance = Math.abs(offset);
       mesh.position.set(offset * layout.spacing, layout.offsetY, -distance * 0.8);
       mesh.rotation.y = -offset * 0.2;
-      mesh.material.opacity = clamp(1 - distance * 0.35, 0.15, 1);
+      mesh.material.uniforms.uOpacity.value = clamp(1 - distance * 0.35, 0.15, 1);
     });
 
     const activeIndex = Math.round(state.current);
@@ -159,15 +237,23 @@ export function createCarousel(canvas, { onChange, reducedMotion }) {
   state.activeIndex = 0;
 
   return {
+    // Jumps straight to a project (used when coming back from project.html)
+    jumpTo(index) {
+      scrollTo(scrollForIndex(clamp(index, 0, count - 1)), { immediate: true });
+    },
     // One promise per texture so the preloader can count them
     loadTextures() {
       const loader = new THREE.TextureLoader();
       return projects.map((project, index) =>
-        loader.loadAsync(project.image).then((texture) => {
+        loader.loadAsync(getCarouselImage(project)).then((texture) => {
           texture.colorSpace = THREE.SRGBColorSpace;
+          coverTexture(texture);
           const { material } = meshes[index];
-          material.map = texture;
-          material.color.set(0xffffff);
+          material.uniforms.uMap.value = texture;
+          // coverTexture() crops via repeat/offset; a ShaderMaterial has to apply them itself
+          material.uniforms.uUvRepeat.value.copy(texture.repeat);
+          material.uniforms.uUvOffset.value.copy(texture.offset);
+          material.defines.HAS_MAP = '';
           material.needsUpdate = true;
         })
       );
@@ -182,7 +268,10 @@ export function createFallback(container, { onChange }) {
   document.querySelector('.work__canvas').hidden = true;
   container.hidden = false;
   container.innerHTML = projects
-    .map((p, i) => `<img src="${p.image}" alt="${p.title}" data-index="${i}" loading="lazy" />`)
+    .map(
+      (p, i) =>
+        `<a href="${projectUrl(p)}"><img src="${getCarouselImage(p)}" alt="${p.title}" data-index="${i}" loading="lazy" /></a>`
+    )
     .join('');
 
   const observer = new IntersectionObserver(

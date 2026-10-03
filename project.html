@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+    <meta name="description" content="" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body class="project-page is-loading">
+    <!-- Fixed top bar -->
+    <header class="header">
+      <a href="./" class="header__name" data-text="name"></a>
+      <a class="header__back" data-back data-text="project.back"></a>
+    </header>
+
+    <main>
+      <!-- Hero: starts as the Work section frame (same image size/position, same project info),
+           then the image grows into the cover (1.png, or 1m.png on mobile) at its own aspect ratio.
+           Video projects (1.mp4) swap the <picture> for a <video> in project.js -->
+      <section class="project-hero">
+        <h2 class="work__label" data-text="work.label"></h2>
+        <div class="project-hero__media">
+          <img class="project-hero__img" data-hero-start alt="" />
+          <!-- Same breakpoint as the desktop styles in main.css (768px) -->
+          <picture>
+            <source media="(max-width: 767px)" data-hero-cover-mobile />
+            <img class="project-hero__img" data-hero-cover alt="" />
+          </picture>
+        </div>
+        <p class="work__hint" data-text="work.hint"></p>
+      </section>
+
+      <!-- Same markup as index.html so the title lands in the exact same spot; only the title stays visible -->
+      <article class="project-info">
+        <p class="project-info__index"></p>
+        <h1 class="project-info__title"></h1>
+        <dl class="project-info__meta">
+          <div><dt data-text="work.labels.role"></dt><dd data-field="role"></dd></div>
+          <div><dt data-text="work.labels.date"></dt><dd data-field="date"></dd></div>
+          <div><dt data-text="work.labels.category"></dt><dd data-field="category"></dd></div>
+        </dl>
+        <p class="project-info__about"><span data-text="work.labels.about"></span> <span data-field="about"></span></p>
+        <a class="project-info__link" data-field="url" target="_blank" rel="noopener" data-text="work.labels.visitSite"></a>
+      </article>
+
+      <!-- Filled from src/assets/projects/<folder>/ -->
+      <section class="project-gallery" data-gallery></section>
+    </main>
+
+    <!-- Video projects on a portrait phone: shown while the video switches to rotated fullscreen -->
+    <div class="rotate-hint" role="status">
+      <div class="rotate-hint__phone" aria-hidden="true"></div>
+      <p class="rotate-hint__text" data-text="project.rotate"></p>
+    </div>
+
+    <script type="module" src="/src/project.js"></script>
+  </body>
+</html>
